@@ -1,0 +1,66 @@
+﻿@model DockerMvc.ModelView.ProductosViewModel;
+
+@{
+    Layout = null; // Para evitar el uso de layout en esta vista
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Crear Producto</title>
+    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" /> <!-- Asegúrate de que la ruta a Bootstrap sea correcta -->
+</head>
+<body>
+    <div class="container">
+        <h1>Crear Nuevo Producto</h1>
+        <form asp-action="Create" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+            <div class="form-group">
+                <label for="Nombre">Nombre:</label>
+                <input type="text" class="form-control" id="Nombre" name="Nombre" required>
+                <div class="invalid-feedback">Por favor ingresa un nombre.</div>
+            </div>
+            <div class="form-group">
+                <label for="Descripcion">Descripción:</label>
+                <textarea class="form-control" id="Descripcion" name="Descripcion" rows="3" required></textarea>
+                <div class="invalid-feedback">Por favor ingresa una descripción.</div>
+            </div>
+            <div class="form-group">
+                <label for="Imagen">Imagen:</label>
+                <input type="file" class="form-control-file" id="Imagen" name="Imagen" accept="image/*">
+                <small class="form-text text-muted">Selecciona una imagen para el producto.</small>
+            </div>
+            <div class="form-group">
+                <label for="Precio">Precio:</label>
+                <input type="number" class="form-control" id="Precio" name="Precio" step="0.01" required>
+                <div class="invalid-feedback">Por favor ingresa un precio válido.</div>
+            </div>
+            <div class="form-group">
+                <label for="Stock">Stock:</label>
+                <input type="number" class="form-control" id="Stock" name="Stock" required>
+                <div class="invalid-feedback">Por favor ingresa una cantidad de stock válida.</div>
+            </div>
+            <button type="submit" class="btn btn-primary">Crear Producto</button>
+        </form>
+    </div>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script> <!-- Asegúrate de incluir el script de Bootstrap -->
+    <script>
+        // Validación de formulario usando Bootstrap (requiere Bootstrap 4+)
+        (function () {
+            'use strict';
+            var forms = document.querySelectorAll('.needs-validation');
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+        })();
+    </script>
+</body>
+</html>

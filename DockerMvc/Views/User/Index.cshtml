@@ -1,0 +1,16 @@
+﻿@model DockerMvc.Models.Profile
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Profile</title>
+</head>
+<body>
+<h1>User Profile</h1>
+<div>
+    <img src="@Model.ProImage" alt="Profile Image" width="150" height="150" />
+    <h2>@Model.ProName @Model.ProLastname</h2>
+    <p>@Model.ProEmail</p>
+</div>
+</body>
+</html>
