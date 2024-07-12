@@ -1,18 +1,59 @@
-﻿
+﻿@model IEnumerable<DockerMvc.Models.Categoria>
 
 @{
-    Layout = null;
+    ViewData["Title"] = "Lista de Categorías";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<!DOCTYPE html>
-
-<html>
-<head>
-    <title>title</title>
-</head>
-<body>
-<div>
-      
+<div class="container">
+    @if (TempData["mensaje"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["mensaje"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+    <div class="row mb-3">
+        <div class="col-sm-6">
+            <h3>Lista de Categorías</h3>
+        </div>
+        <div class="col-sm-6 text-right">
+            <a class="btn btn-success" asp-action="Create">Agregar nueva categoría</a>
+        </div>
+    </div>
+    <div class="row">
+        @if (Model != null && Model.Any())
+        {
+            <table class="table table-striped table-bordered">
+                <thead>
+                <tr>
+                    <th>@Html.DisplayNameFor(m => m.CatId)</th>
+                    <th>@Html.DisplayNameFor(m => m.Name)</th>
+                    <th>@Html.DisplayNameFor(m => m.Description)</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.CatId</td>
+                        <td>@item.Name</td>
+                        <td>@item.Description</td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.CatId" class="btn btn-primary btn-sm">Editar</a>
+                            <a asp-action="Delete" asp-route-id="@item.CatId" class="btn btn-danger btn-sm">Eliminar</a>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>No existen categorías</p>
+        }
+    </div>
 </div>
-</body>
-</html>

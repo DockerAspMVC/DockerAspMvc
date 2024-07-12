@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DockerMvc.Interface;
+using DockerMvc.Interface.Services;
 using DockerMvc.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
@@ -32,6 +33,9 @@ namespace DockerMvc
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IProductoService, ProductoService>();
+            services.AddScoped<ICategoriaService, CategoriaService>();
+            services.AddScoped <ISubCategoriaService, SubCategoriaService>();
 
             services.AddControllersWithViews();
             services.AddRazorPages();
