@@ -1,33 +1,28 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using DockerMvc.Data;
+﻿using System.Threading.Tasks;
+using DockerMvc.Interface;
 using DockerMvc.Models;
 using DockerMvc.ModelView;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace DockerMvc.Controllers
 {
     [Authorize(Policy = "Admin")]
     public class ProductosController : Controller
     {
-        private readonly BaseDbContext _context;
-        public ProductosController(BaseDbContext context)
+        private readonly IProductoService _productoService;
+
+        public ProductosController(IProductoService productoService)
         {
-            _context = context;
+            _productoService = productoService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var productos = _context.Productos.ToList();
+            var productos = await _productoService.GetProductosAsync();
             return View(productos);
         }
-        
+
         public IActionResult Create()
         {
             return View();
@@ -43,143 +38,88 @@ namespace DockerMvc.Controllers
                     Nombre = productos.Nombre,
                     Descripcion = productos.Descripcion,
                     Precio = productos.Precio,
-                    Imagen = await SaveImageAsync(productos.Imagen),
+                    Imagen = await _productoService.SaveImageAsync(productos.Imagen),
                     Stock = productos.Stock
                 };
-                _context.Productos.Add(newProduct);
-                _context.SaveChanges();
-                TempData["mensaje"] = "El libro se agrego correctamente";
+                await _productoService.AddProductoAsync(newProduct);
+                TempData["mensaje"] = "El producto se agregó correctamente";
                 return RedirectToAction("Index");
-                
             }
 
             return View(productos);
         }
-        private async Task<string> SaveImageAsync(IFormFile image)
+
+        public async Task<IActionResult> Edit(int id)
         {
-            if (image != null && image.Length > 0)
-            {
-                var fileExtension = Path.GetExtension(image.FileName).ToLower();
-                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
-
-                if (!allowedExtensions.Contains(fileExtension))
-                {
-                    ModelState.AddModelError(string.Empty, "Only image files (jpg, jpeg, png, gif) are allowed.");
-                    return "/images/default-image.jpg";
-                }
-
-                var fileName = Path.GetFileName(image.FileName);
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", fileName);
-
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await image.CopyToAsync(fileStream);
-                }
-
-                return $"/images/{fileName}";
-            }
-
-            return "/images/default-image.jpg";
-        }
-        
-        public IActionResult Edit(int? id)
-        {
-            if (id == null)
+            var producto = await _productoService.GetProductoByIdAsync(id);
+            if (producto == null)
             {
                 return NotFound();
             }
-            var productos = _context.Productos.Find(id);
-            if (productos == null)
+
+            var productoViewModel = new ProductosViewModel
             {
-                return NotFound();
-            }
-            return View(productos);
+                ProduId = producto.ProduId,
+                Nombre = producto.Nombre,
+                Descripcion = producto.Descripcion,
+                Precio = producto.Precio,
+                Stock = producto.Stock,
+                Imagen = null // Aquí puedes cargar una vista previa si lo deseas
+            };
+
+            return View(productoViewModel);
         }
-        
+
         [HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> Edit(int id, [Bind("ProduId, Nombre, Descripcion, Imagen, Precio, Stock")] Productos producto, IFormFile nuevaImagen)
-{
-    if (id != producto.ProduId)
-    {
-        return NotFound();
-    }
-
-    if (ModelState.IsValid)
-    {
-        try
+        public async Task<IActionResult> Edit(ProductosViewModel productos)
         {
-            if (nuevaImagen != null && nuevaImagen.Length > 0)
+            if (ModelState.IsValid)
             {
-                var fileExtension = Path.GetExtension(nuevaImagen.FileName).ToLower();
-                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
-
-                if (!allowedExtensions.Contains(fileExtension))
+                var producto = await _productoService.GetProductoByIdAsync(productos.ProduId);
+                if (producto == null)
                 {
-                    ModelState.AddModelError(string.Empty, "Solo se permiten archivos de imagen (jpg, jpeg, png, gif).");
-                    return View(producto);
-                }
-                if (!string.IsNullOrEmpty(producto.Imagen) && producto.Imagen != "/images/default-image.jpg")
-                {
-                    var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", producto.Imagen.TrimStart('/'));
-                    if (System.IO.File.Exists(imagePath))
-                    {
-                        System.IO.File.Delete(imagePath);
-                    }
+                    return NotFound();
                 }
 
-                producto.Imagen = await SaveImageAsync(nuevaImagen);
-            }
+                producto.Nombre = productos.Nombre;
+                producto.Descripcion = productos.Descripcion;
+                producto.Precio = productos.Precio;
+                producto.Stock = productos.Stock;
 
-            _context.Update(producto);
-            await _context.SaveChangesAsync();
-            TempData["mensaje"] = "El producto se actualizó correctamente.";
-            return RedirectToAction(nameof(Index));
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!ProductoExists(producto.ProduId))
-            {
-                return NotFound();
-            }
-            else
-            {
-                throw;
-            }
-        }
-    }
-    return View(producto);
-}
+                if (productos.Imagen != null)
+                {
+                    producto.Imagen = await _productoService.UpdateImageAsync(productos.Imagen, producto.Imagen);
+                }
 
-
-private bool ProductoExists(int id)
-{
-    return _context.Productos.Any(e => e.ProduId == id);
-}
-        
-        public IActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-            var productos = _context.Productos.Find(id);
-            if (productos == null)
-            {
-                return NotFound();
+                await _productoService.UpdateProductoAsync(producto);
+                TempData["mensaje"] = "El producto se actualizó correctamente";
+                return RedirectToAction("Index");
             }
             return View(productos);
         }
-        
-        [HttpPost]
-        public IActionResult Delete(Productos productos)
+
+        public async Task<IActionResult> Delete(int id)
         {
-            _context.Productos.Remove(productos);
-            _context.SaveChanges();
-            TempData["mensaje"] = "El libro se elimino correctamente";
+            var producto = await _productoService.GetProductoByIdAsync(id);
+            if (producto == null)
+            {
+                return NotFound();
+            }
+            return View(producto);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var producto = await _productoService.GetProductoByIdAsync(id);
+            if (producto == null)
+            {
+                return NotFound();
+            }
+
+            await _productoService.DeleteProductoAsync(producto);
+            TempData["mensaje"] = "El producto se eliminó correctamente";
             return RedirectToAction("Index");
         }
-        
-        
     }
 }
