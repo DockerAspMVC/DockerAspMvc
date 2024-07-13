@@ -105,3 +105,9 @@ C:\Users\mateo\RiderProjects\DockerMvc\DockerMvc\obj\Debug\net5.0\Razor\Views\Pr
 C:\Users\mateo\RiderProjects\DockerMvc\DockerMvc\obj\Debug\net5.0\Razor\Views\Productos\Index.cshtml.g.cs
 C:\Users\mateo\RiderProjects\DockerMvc\DockerMvc\obj\Debug\net5.0\Razor\Views\SubCategoria\Index.cshtml.g.cs
 C:\Users\mateo\RiderProjects\DockerMvc\DockerMvc\obj\Debug\net5.0\Razor\Views\Productos\Delete.cshtml.g.cs
+C:\Users\mateo\RiderProjects\DockerMvc\DockerMvc\obj\Debug\net5.0\Razor\Views\Categoria\Create.cshtml.g.cs
+C:\Users\mateo\RiderProjects\DockerMvc\DockerMvc\obj\Debug\net5.0\Razor\Views\Categoria\Delete.cshtml.g.cs
+C:\Users\mateo\RiderProjects\DockerMvc\DockerMvc\obj\Debug\net5.0\Razor\Views\Categoria\Edit.cshtml.g.cs
+C:\Users\mateo\RiderProjects\DockerMvc\DockerMvc\obj\Debug\net5.0\Razor\Views\SubCategoria\Create.cshtml.g.cs
+C:\Users\mateo\RiderProjects\DockerMvc\DockerMvc\obj\Debug\net5.0\Razor\Views\SubCategoria\Delete.cshtml.g.cs
+C:\Users\mateo\RiderProjects\DockerMvc\DockerMvc\obj\Debug\net5.0\Razor\Views\SubCategoria\Edit.cshtml.g.cs
