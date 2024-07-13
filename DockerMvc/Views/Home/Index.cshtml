@@ -8,75 +8,52 @@
         <div class="col-lg-3 col-6">
             <div class="small-box bg-info">
                 <div class="inner">
-                    <h3>150</h3>
-                    <p>New Orders</p>
+                    <h3>@ViewBag.ProductsCount</h3>
+                    <p>Productos</p>
                 </div>
                 <div class="icon">
                     <i class="fa fa-shopping-cart"></i>
                 </div>
-                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
-        </div>
-        <div class="col-lg-3 col-6">
-            <div class="small-box bg-success">
-                <div class="inner">
-                    <h3>53<sup style="font-size: 20px">%</sup></h3>
-                    <p>Bounce Rate</p>
-                </div>
-                <div class="icon">
-                    <i class="fa fa-chart-bar"></i>
-                </div>
-                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                <a href="#" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
             </div>
         </div>
         <div class="col-lg-3 col-6">
             <div class="small-box bg-warning">
                 <div class="inner">
-                    <h3>44</h3>
-                    <p>User Registrations</p>
+                    <h3>@ViewBag.ProfilesCount</h3>
+                    <p>Usuarios Registrados</p>
                 </div>
                 <div class="icon">
                     <i class="fa fa-user-plus"></i>
                 </div>
-                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
-        </div>
-        <div class="col-lg-3 col-6">
-            <div class="small-box bg-danger">
-                <div class="inner">
-                    <h3>65</h3>
-                    <p>Unique Visitors</p>
-                </div>
-                <div class="icon">
-                    <i class="fa fa-chart-pie"></i>
-                </div>
-                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                <a href="#" class="small-box-footer">Más información <i class="fas fa-arrow-circle-right"></i></a>
             </div>
         </div>
     </div>
 
     <div class="row">
         <div class="col-lg-6">
-            <canvas id="salesChart"></canvas>
+            <canvas id="profilesChart"></canvas>
         </div>
         <div class="col-lg-6">
-            <div id="usaMap" style="height: 400px;"></div>
+            <canvas id="productsChart"></canvas>
         </div>
     </div>
 </div>
 
 @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        var ctx = document.getElementById('salesChart').getContext('2d');
-        var salesChart = new Chart(ctx, {
-            type: 'line',
+        var profilesCtx = document.getElementById('profilesChart').getContext('2d');
+        var profilesChart = new Chart(profilesCtx, {
+            type: 'bar',
             data: {
-                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+                labels: ['Usuarios Registrados'],
                 datasets: [{
-                    label: 'Sales',
-                    data: [10, 30, 50, 20, 25, 44, 30],
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
+                    label: 'Usuarios',
+                    data: [@ViewBag.ProfilesCount],
+                    backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                    borderColor: 'rgba(255, 206, 86, 1)',
                     borderWidth: 1
                 }]
             },
@@ -89,20 +66,26 @@
             }
         });
 
-        new Morris.Area({
-            element: 'usaMap',
-            data: [
-                { y: '2006', a: 100, b: 90 },
-                { y: '2007', a: 75,  b: 65 },
-                { y: '2008', a: 50,  b: 40 },
-                { y: '2009', a: 75,  b: 65 },
-                { y: '2010', a: 50,  b: 40 },
-                { y: '2011', a: 75,  b: 65 },
-                { y: '2012', a: 100, b: 90 }
-            ],
-            xkey: 'y',
-            ykeys: ['a', 'b'],
-            labels: ['Series A', 'Series B']
+        var productsCtx = document.getElementById('productsChart').getContext('2d');
+        var productsChart = new Chart(productsCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Productos'],
+                datasets: [{
+                    label: 'Productos',
+                    data: [@ViewBag.ProductsCount],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
         });
     </script>
 }

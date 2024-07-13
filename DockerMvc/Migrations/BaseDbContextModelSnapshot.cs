@@ -66,7 +66,6 @@ namespace DockerMvc.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Imagen")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Nombre")

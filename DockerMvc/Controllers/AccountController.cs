@@ -46,7 +46,7 @@ namespace DockerMvc.Controllers
 
                     var claims = new List<Claim>
                     {
-                        new Claim(ClaimTypes.Name, user.ProName),
+                        new Claim(ClaimTypes.Name, user.ProPassword),
                         new Claim(ClaimTypes.Email, user.ProEmail)
                     };
 
