@@ -7,6 +7,7 @@ namespace DockerMvc.Interface
     public interface IAuthService
     {
         Task<Profile> Authenticate(string email, string password);
-        Task<List<string>> GetRoles(int profileId);
+        Task<List<string>> GetRoles(int userId);
     }
+
 }

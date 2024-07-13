@@ -1,19 +1,15 @@
 using DockerMvc.Data;
+using DockerMvc.Interface;
+using DockerMvc.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using DockerMvc.Interface;
-using DockerMvc.Models;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Identity;
-using DbContext = System.Data.Entity.DbContext;
 
 namespace DockerMvc
 {
@@ -25,17 +21,27 @@ namespace DockerMvc
         }
 
         public IConfiguration Configuration { get; }
-        
+
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddControllersWithViews();
+            services.AddDataProtection();
+            // Configuración de DbContext
             services.AddDbContext<BaseDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
+            // Inyección de dependencias para servicios
             services.AddScoped<IAuthService, AuthService>();
+            services.AddTransient<IEmailService, EmailService>();
 
+            // Configuración de hashing de contraseñas
+            services.AddScoped<IPasswordHasher<Profile>, PasswordHasher<Profile>>();
+
+            // Configuración de MVC y Razor Pages
             services.AddControllersWithViews();
             services.AddRazorPages();
 
+            // Configuración de autenticación
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
                 {
@@ -43,10 +49,21 @@ namespace DockerMvc
                     options.AccessDeniedPath = "/Account/AccessDenied";
                 });
 
+            // Políticas de autorización
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
                 options.AddPolicy("User", policy => policy.RequireRole("User"));
+            });
+
+            // Configuración de la sesión
+            services.AddDistributedMemoryCache();
+
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(60);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
             });
         }
 
@@ -70,6 +87,8 @@ namespace DockerMvc
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseSession();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
@@ -78,7 +97,5 @@ namespace DockerMvc
                 endpoints.MapRazorPages();
             });
         }
-
-
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Identity;
 
 namespace DockerMvc.Models
 {
@@ -19,11 +18,13 @@ namespace DockerMvc.Models
         public string ProLastname { get; set; }
 
         [Required]
+        [EmailAddress]
         [Display(Name = "Correo")]
         public string ProEmail { get; set; }
 
         [Required]
-        [Display(Name = "Contraseña")]
+        [Display(Name = "Contraseña")]
+        [DataType(DataType.Password)]
         public string ProPassword { get; set; }
 
         public byte[] ProEncryptedPass { get; set; }

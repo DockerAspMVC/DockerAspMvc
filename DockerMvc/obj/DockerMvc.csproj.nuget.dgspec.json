@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\mateo\\RiderProjects\\DockerMvc\\DockerMvc\\DockerMvc.csproj": {}
+    "C:\\Users\\Junior Bonilla\\Desktop\\DockerMvc\\DockerMvc\\DockerMvc.csproj": {}
   },
   "projects": {
-    "C:\\Users\\mateo\\RiderProjects\\DockerMvc\\DockerMvc\\DockerMvc.csproj": {
+    "C:\\Users\\Junior Bonilla\\Desktop\\DockerMvc\\DockerMvc\\DockerMvc.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\mateo\\RiderProjects\\DockerMvc\\DockerMvc\\DockerMvc.csproj",
+        "projectUniqueName": "C:\\Users\\Junior Bonilla\\Desktop\\DockerMvc\\DockerMvc\\DockerMvc.csproj",
         "projectName": "DockerMvc",
-        "projectPath": "C:\\Users\\mateo\\RiderProjects\\DockerMvc\\DockerMvc\\DockerMvc.csproj",
-        "packagesPath": "C:\\Users\\mateo\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\mateo\\RiderProjects\\DockerMvc\\DockerMvc\\obj\\",
+        "projectPath": "C:\\Users\\Junior Bonilla\\Desktop\\DockerMvc\\DockerMvc\\DockerMvc.csproj",
+        "packagesPath": "C:\\Users\\Junior Bonilla\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Junior Bonilla\\Desktop\\DockerMvc\\DockerMvc\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\mateo\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Junior Bonilla\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -45,11 +45,23 @@
         "net5.0": {
           "targetAlias": "net5.0",
           "dependencies": {
+            "BCrypt.Net-Next": {
+              "target": "Package",
+              "version": "[4.0.3, )"
+            },
             "EntityFramework": {
               "target": "Package",
               "version": "[6.5.1, )"
             },
+            "MailKit": {
+              "target": "Package",
+              "version": "[4.7.0, )"
+            },
             "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[5.0.17, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
               "target": "Package",
               "version": "[5.0.17, )"
             },
@@ -68,6 +80,10 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[9.0.0-preview.6.24327.4, )"
+            },
+            "MimeKit": {
+              "target": "Package",
+              "version": "[4.7.1, )"
             }
           },
           "imports": [

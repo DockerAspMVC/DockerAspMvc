@@ -18,8 +18,12 @@ namespace DockerMvc.Interface
 
         public async Task<Profile> Authenticate(string email, string password)
         {
-            var user = await _context.Profiles
-                .FirstOrDefaultAsync(u => u.ProEmail == email && u.ProPassword == password);
+            var user = await _context.Profiles.SingleOrDefaultAsync(x => x.ProEmail == email);
+
+            if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.ProPassword))
+            {
+                return null;
+            }
 
             return user;
         }

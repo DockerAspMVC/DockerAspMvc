@@ -4,15 +4,17 @@ using System.IO;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using DockerMvc.Data;
+using DockerMvc.Interface;
 using DockerMvc.Models;
 using DockerMvc.ModelView;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
-using DockerMvc.Interface;
+using BCrypt.Net;
 
 namespace DockerMvc.Controllers
 {
@@ -20,11 +22,15 @@ namespace DockerMvc.Controllers
     {
         private readonly BaseDbContext _context;
         private readonly IAuthService _authService;
+        private readonly IEmailService _emailService;
+        private readonly IDataProtector _protector;
 
-        public AccountController(BaseDbContext context, IAuthService authService)
+        public AccountController(BaseDbContext context, IAuthService authService, IEmailService emailService, IDataProtectionProvider dataProtectionProvider)
         {
             _context = context;
             _authService = authService;
+            _emailService = emailService;
+            _protector = dataProtectionProvider.CreateProtector("DockerMvc.AccountController");
         }
 
         [HttpGet]
@@ -61,7 +67,8 @@ namespace DockerMvc.Controllers
                         IsPersistent = model.RememberMe
                     };
 
-                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+                        new ClaimsPrincipal(claimsIdentity), authProperties);
 
                     if (roles.Contains("Admin"))
                     {
@@ -77,19 +84,12 @@ namespace DockerMvc.Controllers
             }
 
             return View(model);
-        }        
-
+        }
 
         [HttpGet]
         public IActionResult Register()
         {
             return View();
-        }
-        
-        public async Task<IActionResult> Logout()
-        {
-            await HttpContext.SignOutAsync();
-            return RedirectToAction("Index", "Home");
         }
 
         [HttpPost]
@@ -97,13 +97,15 @@ namespace DockerMvc.Controllers
         {
             if (ModelState.IsValid)
             {
+                var hashedPassword = BCrypt.Net.BCrypt.HashPassword(model.Password);
+
                 var profile = new Profile
                 {
                     ProName = model.Name,
                     ProLastname = model.Lastname,
                     ProEmail = model.Email,
-                    ProPassword = model.Password,
-                    ProImage = await SaveImageAsync(model.Image) 
+                    ProPassword = hashedPassword,
+                    ProImage = await SaveImageAsync(model.Image)
                 };
 
                 _context.Add(profile);
@@ -114,6 +116,125 @@ namespace DockerMvc.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _context.Profiles.SingleOrDefaultAsync(u => u.ProEmail == model.Email);
+            if (user == null)
+            {
+                ModelState.AddModelError(string.Empty, "No se encontró ningún usuario con ese correo electrónico.");
+                return View(model);
+            }
+
+            // Generar token de restablecimiento
+            var token = _protector.Protect($"{user.ProEmail}|{DateTime.UtcNow.AddHours(1)}");
+
+            var resetLink = Url.Action("ResetPassword", "Account", new { token = token }, Request.Scheme);
+
+            // Log the reset link to verify it
+            Console.WriteLine(resetLink);
+
+            // Aquí deberías enviar el enlace por correo electrónico
+            await _emailService.SendEmailAsync(model.Email, "Reset Password",
+                $"Por favor restablece tu contraseña usando este enlace: {resetLink}");
+
+            // Redirigir a la vista de confirmación de olvido de contraseña
+            return RedirectToAction("ForgotPasswordConfirmation");
+        }
+
+        [HttpGet]
+        public IActionResult ForgotPasswordConfirmation()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult ResetPassword(string token)
+        {
+            try
+            {
+                var unprotectedToken = _protector.Unprotect(token);
+                var tokenParts = unprotectedToken.Split('|');
+                var email = tokenParts[0];
+                var expiry = DateTime.Parse(tokenParts[1]);
+
+                if (expiry < DateTime.UtcNow)
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+
+                var model = new ResetPasswordViewModel { Token = token, Email = email };
+                return View(model);
+            }
+            catch
+            {
+                return RedirectToAction("Index", "Home");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            try
+            {
+                var unprotectedToken = _protector.Unprotect(model.Token);
+                var tokenParts = unprotectedToken.Split('|');
+                var email = tokenParts[0];
+                var expiry = DateTime.Parse(tokenParts[1]);
+
+                if (expiry < DateTime.UtcNow)
+                {
+                    ModelState.AddModelError(string.Empty, "Token inválido o expirado.");
+                    return View(model);
+                }
+
+                var user = await _context.Profiles.SingleOrDefaultAsync(u => u.ProEmail == email);
+                if (user == null)
+                {
+                    ModelState.AddModelError(string.Empty, "No se encontró ningún usuario con ese correo electrónico.");
+                    return View(model);
+                }
+
+                user.ProPassword = BCrypt.Net.BCrypt.HashPassword(model.Password);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("ResetPasswordConfirmation");
+            }
+            catch
+            {
+                ModelState.AddModelError(string.Empty, "Token inválido o expirado.");
+                return View(model);
+            }
+        }
+
+        [HttpGet]
+        public IActionResult ResetPasswordConfirmation()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync();
+            return RedirectToAction("Index", "Home");
+        }
 
         private async Task<string> SaveImageAsync(IFormFile image)
         {
@@ -141,8 +262,6 @@ namespace DockerMvc.Controllers
 
             return "/images/default-image.jpg";
         }
-
-
 
         [HttpGet]
         public IActionResult AccessDenied()
