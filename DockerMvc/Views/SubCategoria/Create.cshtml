@@ -1,43 +1,52 @@
 ﻿@model DockerMvc.Models.SubCategoria
-@using Microsoft.AspNetCore.Mvc.Rendering
+
 @{
-    ViewData["Title"] = "Crear SubCategoría";
+    ViewData["Title"] = "Create SubCategoria";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="container">
-    <h2>Crear SubCategoría</h2>
+    <h2>Create SubCategoria</h2>
 
-    <form asp-action="Create" asp-controller="SubCategoria" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+    <form asp-action="Create" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+        
+        
         <div class="form-group">
-            <label asp-for="Image" class="control-label">Imagen de SubCategoría:</label>
-            <input type="file" class="form-control-file" asp-for="Image" accept="image/*">
-            <span asp-validation-for="Image" class="text-danger"></span>
+            <label asp-for="CatId">Categoría:</label>
+            <select asp-for="CatId" class="form-control" asp-items="ViewBag.Categorias"></select>
         </div>
+        
         <div class="form-group">
-            <label asp-for="ProduId" class="control-label">Producto:</label>
-            <select asp-for="ProduId" class="form-control">
-                <option value="">Seleccionar Producto</option>
+            <label for="selectedProducts">Productos:</label>
+            <select id="selectedProducts" name="selectedProducts" class="form-control" multiple>
                 @foreach (var producto in ViewBag.Productos)
                 {
-                    <option value="@producto.ProduId">@producto.Nombre</option>
+                    <option value="@producto.Value">@producto.Text</option>
                 }
             </select>
-            <span asp-validation-for="ProduId" class="text-danger"></span>
         </div>
-        <div class="form-group">
-            <label asp-for="CatId" class="control-label">Categoría:</label>
-            <select asp-for="CatId" class="form-control">
-                <option value="">Seleccionar Categoría</option>
-                @foreach (var categoria in ViewBag.Categorias)
-                {
-                    <option value="@categoria.CatId">@categoria.Name</option>
-                }
-            </select>
-            <span asp-validation-for="CatId" class="text-danger"></span>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Guardar</button>
-        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+        
+        <button type="submit" class="btn btn-primary">Create</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
+
+@section Scripts {
+    <script>
+        // Form validation using Bootstrap (requires Bootstrap 4+)
+        (function () {
+            'use strict';
+            var forms = document.querySelectorAll('.needs-validation');
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+        })();
+    </script>
+}

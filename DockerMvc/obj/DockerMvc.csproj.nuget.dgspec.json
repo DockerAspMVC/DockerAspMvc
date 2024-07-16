@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\mateo\\RiderProjects\\DockerMvc\\DockerMvc\\DockerMvc.csproj": {}
+    "C:\\Users\\mateo\\RiderProjects\\DockerAspMvc\\DockerMvc\\DockerMvc.csproj": {}
   },
   "projects": {
-    "C:\\Users\\mateo\\RiderProjects\\DockerMvc\\DockerMvc\\DockerMvc.csproj": {
+    "C:\\Users\\mateo\\RiderProjects\\DockerAspMvc\\DockerMvc\\DockerMvc.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\mateo\\RiderProjects\\DockerMvc\\DockerMvc\\DockerMvc.csproj",
+        "projectUniqueName": "C:\\Users\\mateo\\RiderProjects\\DockerAspMvc\\DockerMvc\\DockerMvc.csproj",
         "projectName": "DockerMvc",
-        "projectPath": "C:\\Users\\mateo\\RiderProjects\\DockerMvc\\DockerMvc\\DockerMvc.csproj",
+        "projectPath": "C:\\Users\\mateo\\RiderProjects\\DockerAspMvc\\DockerMvc\\DockerMvc.csproj",
         "packagesPath": "C:\\Users\\mateo\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\mateo\\RiderProjects\\DockerMvc\\DockerMvc\\obj\\",
+        "outputPath": "C:\\Users\\mateo\\RiderProjects\\DockerAspMvc\\DockerMvc\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

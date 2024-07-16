@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using DockerMvc.Data;
 using DockerMvc.Models;
@@ -21,21 +20,14 @@ namespace DockerMvc.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var userEmail = HttpContext.User.FindFirst(ClaimTypes.Email)?.Value;
+            // Cargar las subcategorías con productos asociados
+            var subCategoriasConProductos = await _context.SubCategorias
+                .Include(sc => sc.Categoria) // Incluir la categoría asociada a la subcategoría
+                .Include(sc => sc.SubCategoriaProductos) // Incluir productos asociados a las subcategorías
+                .ThenInclude(scp => scp.Productos) // Incluir los detalles de los productos
+                .ToListAsync();
 
-            if (userEmail == null)
-            {
-                return NotFound();
-            }
-
-            var userProfile = await _context.Profiles.FirstOrDefaultAsync(p => p.ProEmail == userEmail);
-
-            if (userProfile == null)
-            {
-                return NotFound();
-            }
-
-            return View(userProfile);
+            return View(subCategoriasConProductos); // Pasar subcategorías con productos a la vista
         }
     }
 }

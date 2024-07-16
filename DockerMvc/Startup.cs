@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using DockerMvc.Interface;
 using DockerMvc.Interface.Services;
 using DockerMvc.Models;
+using DockerMvc.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using DbContext = System.Data.Entity.DbContext;
@@ -36,6 +37,7 @@ namespace DockerMvc
             services.AddScoped<IProductoService, ProductoService>();
             services.AddScoped<ICategoriaService, CategoriaService>();
             services.AddScoped <ISubCategoriaService, SubCategoriaService>();
+            services.AddScoped<IEmailService, EmailService>();
 
             services.AddControllersWithViews();
             services.AddRazorPages();

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "xUhQZHT/2mgWS1vzFgxatp89Us1SO2M6Rx3ACiDkV8KAE/2/LPyyQaaYMErgWIlD+dCVwo1tSqFM8VYPX6Ky7g==",
+  "dgSpecHash": "sQUV980Bkql9j3b/deZpixNloSd6HfA9Bqy1ywhDyDfSnxp5HLuj/xaG/d71NkE8H/IrionFuGzQVrj/VyF9OA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\mateo\\RiderProjects\\DockerMvc\\DockerMvc\\DockerMvc.csproj",
+  "projectFilePath": "C:\\Users\\mateo\\RiderProjects\\DockerAspMvc\\DockerMvc\\DockerMvc.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\mateo\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\mateo\\.nuget\\packages\\bouncycastle.cryptography\\2.4.0\\bouncycastle.cryptography.2.4.0.nupkg.sha512",

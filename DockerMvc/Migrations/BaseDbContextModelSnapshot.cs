@@ -198,16 +198,33 @@ namespace DockerMvc.Migrations
                     b.Property<string>("Image")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ProduId")
-                        .HasColumnType("int");
-
                     b.HasKey("SubId");
 
                     b.HasIndex("CatId");
 
-                    b.HasIndex("ProduId");
-
                     b.ToTable("SubCategorias");
+                });
+
+            modelBuilder.Entity("DockerMvc.Models.SubCategoriaProducto", b =>
+                {
+                    b.Property<int>("SubCategoriaProductoId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("ProductoId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SubCategoriaSubId")
+                        .HasColumnType("int");
+
+                    b.HasKey("SubCategoriaProductoId");
+
+                    b.HasIndex("ProductoId");
+
+                    b.HasIndex("SubCategoriaSubId");
+
+                    b.ToTable("SubCategoriaProductos");
                 });
 
             modelBuilder.Entity("DockerMvc.Models.RolePermission", b =>
@@ -256,15 +273,31 @@ namespace DockerMvc.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Categoria");
+                });
+
+            modelBuilder.Entity("DockerMvc.Models.SubCategoriaProducto", b =>
+                {
                     b.HasOne("DockerMvc.Models.Productos", "Productos")
                         .WithMany()
-                        .HasForeignKey("ProduId")
+                        .HasForeignKey("ProductoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Categoria");
+                    b.HasOne("DockerMvc.Models.SubCategoria", "SubCategoria")
+                        .WithMany("SubCategoriaProductos")
+                        .HasForeignKey("SubCategoriaSubId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Productos");
+
+                    b.Navigation("SubCategoria");
+                });
+
+            modelBuilder.Entity("DockerMvc.Models.SubCategoria", b =>
+                {
+                    b.Navigation("SubCategoriaProductos");
                 });
 #pragma warning restore 612, 618
         }
