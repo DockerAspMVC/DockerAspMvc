@@ -26,7 +26,7 @@ namespace DockerMvc
         }
 
         public IConfiguration Configuration { get; }
-        
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<BaseDbContext>(options =>
@@ -35,8 +35,8 @@ namespace DockerMvc
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IProductoService, ProductoService>();
             services.AddScoped<ICategoriaService, CategoriaService>();
-            services.AddScoped <ISubCategoriaService, SubCategoriaService>();
-
+            services.AddScoped<ISubCategoriaService, SubCategoriaService>();
+            services.AddScoped<IEmailService, EmailService>();
             services.AddControllersWithViews();
             services.AddRazorPages();
 
@@ -46,6 +46,13 @@ namespace DockerMvc
                     options.LoginPath = "/Account/Login";
                     options.AccessDeniedPath = "/Account/AccessDenied";
                 });
+            services.AddSession(options =>
+            {
+                options.IdleTimeout =
+                    TimeSpan.FromMinutes(30); // Ajusta el tiempo de expiración de la sesión según tus necesidades
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
 
             services.AddAuthorization(options =>
             {
@@ -71,6 +78,8 @@ namespace DockerMvc
 
             app.UseRouting();
 
+            app.UseSession(); // Asegúrate de llamar a UseSession antes de UseAuthentication y UseAuthorization
+
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -82,7 +91,5 @@ namespace DockerMvc
                 endpoints.MapRazorPages();
             });
         }
-
-
     }
 }

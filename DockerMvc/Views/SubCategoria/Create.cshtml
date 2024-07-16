@@ -8,11 +8,14 @@
 <div class="container">
     <h2>Crear SubCategoría</h2>
 
-    <form asp-action="Create" asp-controller="SubCategoria" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+    <form asp-action="Create" asp-controller="SubCategoria" method="post" enctype="multipart/form-data" class="needs-validation" novalidate id="createSubCategoriaForm">
         <div class="form-group">
             <label asp-for="Image" class="control-label">Imagen de SubCategoría:</label>
-            <input type="file" class="form-control-file" asp-for="Image" accept="image/*">
+            <input type="file" class="form-control-file" asp-for="Image" accept="image/*" onchange="validateAndPreviewImage(event)">
             <span asp-validation-for="Image" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <img id="imagePreview" src="" alt="Vista previa de la imagen" style="display:none; width: 100%; max-width: 300px; margin-top: 10px;" />
         </div>
         <div class="form-group">
             <label asp-for="ProduId" class="control-label">Producto:</label>
@@ -41,3 +44,46 @@
         <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
     </form>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function validateAndPreviewImage(event) {
+        var input = event.target;
+        var file = input.files[0];
+        var validImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
+
+        if (file && validImageTypes.includes(file.type)) {
+            var reader = new FileReader();
+            reader.onload = function(){
+                var dataURL = reader.result;
+                var output = document.getElementById('imagePreview');
+                output.src = dataURL;
+                output.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            alert('Por favor selecciona una imagen válida (jpg, png, gif).');
+            input.value = ''; // Limpiar el campo de entrada
+            var output = document.getElementById('imagePreview');
+            output.src = '';
+            output.style.display = 'none';
+        }
+    }
+
+    document.getElementById('createSubCategoriaForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        var form = this;
+
+        // Simulación de éxito:
+        Swal.fire({
+            title: 'SubCategoría creada',
+            text: 'La subcategoría ha sido creada exitosamente.',
+            icon: 'success',
+            confirmButtonText: 'Ok'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit(); // Envía el formulario después de mostrar el mensaje de éxito
+            }
+        });
+    });
+</script>

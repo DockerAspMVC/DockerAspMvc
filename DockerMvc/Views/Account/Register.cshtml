@@ -3,41 +3,109 @@
 @{
     ViewData["Title"] = "Register";
 }
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="~/css/register.css"? v="2.3">
 
-<div class="container">
-    <h2>Register</h2>
-    <form asp-controller="Account" asp-action="Register" method="post" enctype="multipart/form-data">
-        <div asp-validation-summary="All" class="text-danger"></div>
-        <div class="form-group">
-            <label asp-for="Name"></label>
-            <input asp-for="Name" class="form-control" />
-            <span asp-validation-for="Name" class="text-danger"></span>
+<div class="register-container">
+    <div class="register-left">
+        <div>
+            <img src="~/images/logos.png" alt="Logo" />
         </div>
-        <div class="form-group">
-            <label asp-for="Lastname"></label>
-            <input asp-for="Lastname" class="form-control" />
-            <span asp-validation-for="Lastname" class="text-danger"></span>
+        <div>
+            <h1>¡Bienvenido!</h1>
+            <p>Bienvenido a nuestra tienda de productos.</p>
+<button onclick="window.location.href = '@Url.Action("Login", "Account")'">Iniciar sesion</button>
         </div>
-        <div class="form-group">
-            <label asp-for="Email"></label>
-            <input asp-for="Email" class="form-control" />
-            <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+    <div class="register-right">
+        <div class="register-form">
+            <form asp-controller="Account" asp-action="Register" method="post" enctype="multipart/form-data" id="registerForm">
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="Name" class="control-label">Nombre</label>
+                    <input asp-for="Name" class="form-control" placeholder="Ingresa tu nombre" />              
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Lastname" class="control-label">Apellido</label>
+                    <input asp-for="Lastname" class="form-control" placeholder="Ingresa tu apellido" />
+                    <span asp-validation-for="Lastname" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Email" class="control-label">Correo Electrónico</label>
+                    <input asp-for="Email" class="form-control" placeholder="Ingresa tu correo electrónico" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Password" class="control-label">Contraseña</label>
+                    <input asp-for="Password" type="password" class="form-control" placeholder="Ingresa tu contraseña" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ConfirmPassword" class="control-label">Confirmar Contraseña</label>
+                    <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Confirma tu contraseña" />
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Image" class="control-label">Imagen de Perfil</label>
+                    <input asp-for="Image" type="file" class="form-control" onchange="validateAndPreviewImage(event)" placeholder="Selecciona una imagen de perfil" />
+                    <span asp-validation-for="Image" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <img id="imagePreview" src="" alt="Vista Previa de la Imagen" style="display:block; width: 100%; max-width: 300px; margin-top: 10px;" />
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Registrarse</button>
+            </form>
         </div>
-        <div class="form-group">
-            <label asp-for="Password"></label>
-            <input asp-for="Password" type="password" class="form-control" />
-            <span asp-validation-for="Password" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <label asp-for="ConfirmPassword"></label>
-            <input asp-for="ConfirmPassword" type="password" class="form-control" />
-            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <label asp-for="Image"></label>
-            <input asp-for="Image" type="file" class="form-control" />
-            <span asp-validation-for="Image" class="text-danger"></span>
-        </div>
-        <button type="submit" class="btn btn-primary">Register</button>
-    </form>
+    </div>
 </div>
+
+<script>
+    function validateAndPreviewImage(event) {
+        var input = event.target;
+        var file = input.files[0];
+        var validImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
+
+        if (file && validImageTypes.includes(file.type)) {
+            var reader = new FileReader();
+            reader.onload = function(){
+                var dataURL = reader.result;
+                var output = document.getElementById('imagePreview');
+                output.src = dataURL;
+            };
+            reader.readAsDataURL(file);
+        } else {
+            alert('Selecciona una imagen con formato válido (jpg, png, gif).');
+            input.value = ''; // Limpiar el campo de entrada
+            document.getElementById('imagePreview').src = '';
+        }
+    }
+
+    document.getElementById('registerForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        var form = this;
+
+        // Aquí puedes simular una respuesta de error (por ejemplo, si el registro falla)
+        var registroExitoso = false; // Cambia a true si el registro es exitoso
+
+        if (registroExitoso) {
+            Swal.fire({
+                title: 'Usuario creado',
+                text: 'El usuario ha sido registrado exitosamente.',
+                icon: 'success',
+                confirmButtonText: 'Ok'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit(); // Envía el formulario después de mostrar el mensaje de éxito
+                }
+            });
+        } else {
+            Swal.fire({
+                title: 'Error',
+                text: 'Ha ocurrido un error al registrar el usuario.',
+                icon: 'error',
+                confirmButtonText: 'Ok'
+            });
+        }
+    });
+</script>

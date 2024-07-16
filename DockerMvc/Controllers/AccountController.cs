@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using BCrypt.Net;
+using DockerMvc.Extensions;
 
 namespace DockerMvc.Controllers
 {
@@ -41,50 +42,97 @@ namespace DockerMvc.Controllers
 
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
+{
+    const int MaxFailedAttempts = 3;
+    const int LockoutDuration = 3; // en segundos
+
+    if (ModelState.IsValid)
+    {
+        var user = await _context.Profiles.SingleOrDefaultAsync(u => u.ProEmail == model.Email);
+
+        if (user != null)
         {
-            if (ModelState.IsValid)
+            string userKey = user.ProId.ToString(); // Assuming user.ProId is unique
+
+            // Verificar si el usuario está bloqueado temporalmente
+            var failedAttempts = HttpContext.Session.GetInt32("FailedLoginAttempts", userKey) ?? 0;
+            var lockoutEndTime = HttpContext.Session.GetDateTime("LockoutEndTime", userKey);
+            if (failedAttempts >= MaxFailedAttempts && lockoutEndTime.HasValue && DateTime.UtcNow < lockoutEndTime.Value)
             {
-                var user = await _authService.Authenticate(model.Email, model.Password);
-
-                if (user != null)
-                {
-                    var roles = await _authService.GetRoles(user.ProId);
-
-                    var claims = new List<Claim>
-                    {
-                        new Claim(ClaimTypes.Name, user.ProPassword),
-                        new Claim(ClaimTypes.Email, user.ProEmail)
-                    };
-
-                    foreach (var role in roles)
-                    {
-                        claims.Add(new Claim(ClaimTypes.Role, role));
-                    }
-
-                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                    var authProperties = new AuthenticationProperties
-                    {
-                        IsPersistent = model.RememberMe
-                    };
-
-                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
-                        new ClaimsPrincipal(claimsIdentity), authProperties);
-
-                    if (roles.Contains("Admin"))
-                    {
-                        return RedirectToAction("Index", "Admin");
-                    }
-                    else if (roles.Contains("User"))
-                    {
-                        return RedirectToAction("Index", "User");
-                    }
-                }
-
-                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                ModelState.AddModelError(string.Empty, "Tu cuenta está bloqueada temporalmente. Inténtalo más tarde.");
+                return View(model);
+            }
+            else if (lockoutEndTime.HasValue && DateTime.UtcNow >= lockoutEndTime.Value)
+            {
+                // Reiniciar el bloqueo después de que el tiempo haya pasado
+                HttpContext.Session.Remove($"FailedLoginAttempts_{userKey}");
+                HttpContext.Session.Remove($"LockoutEndTime_{userKey}");
             }
 
-            return View(model);
+            var isValidPassword = BCrypt.Net.BCrypt.Verify(model.Password, user.ProPassword);
+
+            if (isValidPassword)
+            {
+                // Reiniciar el contador de intentos fallidos
+                HttpContext.Session.Remove($"FailedLoginAttempts_{userKey}");
+                HttpContext.Session.Remove($"LockoutEndTime_{userKey}");
+
+                var roles = await _authService.GetRoles(user.ProId);
+
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.ProName),
+                    new Claim(ClaimTypes.Email, user.ProEmail)
+                };
+
+                foreach (var role in roles)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, role));
+                }
+
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var authProperties = new AuthenticationProperties
+                {
+                    IsPersistent = model.RememberMe
+                };
+
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(claimsIdentity), authProperties);
+
+                if (roles.Contains("Admin"))
+                {
+                    return RedirectToAction("Index", "Admin");
+                }
+                else if (roles.Contains("User"))
+                {
+                    return RedirectToAction("Index", "User");
+                }
+            }
+            else
+            {
+                // Incrementar el contador de intentos fallidos
+                failedAttempts++;
+                HttpContext.Session.SetInt32("FailedLoginAttempts", failedAttempts, userKey);
+
+                if (failedAttempts >= MaxFailedAttempts)
+                {
+                    HttpContext.Session.SetDateTime("LockoutEndTime", DateTime.UtcNow.AddSeconds(LockoutDuration), userKey);
+                    ModelState.AddModelError(string.Empty, "Tu cuenta está bloqueada temporalmente por múltiples intentos fallidos. Inténtalo más tarde.");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, $"Intento de inicio de sesión no válido. Intentos restantes: {MaxFailedAttempts - failedAttempts}");
+                }
+            }
         }
+        else
+        {
+            ModelState.AddModelError(string.Empty, "Intento de inicio de sesión no válido.");
+        }
+    }
+
+    return View(model);
+}
 
         [HttpGet]
         public IActionResult Register()
@@ -110,6 +158,21 @@ namespace DockerMvc.Controllers
 
                 _context.Add(profile);
                 await _context.SaveChangesAsync();
+
+                // Asignar rol al usuario
+                var userRole = await _context.Roles.SingleOrDefaultAsync(r => r.RoleName == "User");
+                if (userRole != null)
+                {
+                    var roleProfile = new RoleProfile
+                    {
+                        ProId = profile.ProId,
+                        RoleId = userRole.RoleId
+                    };
+
+                    _context.Add(roleProfile);
+                    await _context.SaveChangesAsync();
+                }
+
                 return RedirectToAction("Index", "User");
             }
 

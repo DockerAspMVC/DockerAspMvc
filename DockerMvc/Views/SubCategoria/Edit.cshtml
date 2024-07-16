@@ -13,8 +13,8 @@
 
         <div class="form-group">
             <label asp-for="Image" class="control-label">Imagen de SubCategoría:</label>
-            <input type="file" class="form-control-file" asp-for="Image" accept="image/*">
-            <img src="@Model.Image" class="img-thumbnail" style="width: 150px; height: 150px; object-fit: cover;" />
+            <input type="file" class="form-control-file" asp-for="Image" accept="image/*" onchange="validateAndPreviewImage(event)">
+            <img id="imagePreview" src="@Model.Image" class="img-thumbnail" style="width: 150px; height: 150px; object-fit: cover;" />
             <span asp-validation-for="Image" class="text-danger"></span>
         </div>
 
@@ -64,5 +64,28 @@
                     }, false);
                 });
         })();
+
+        function validateAndPreviewImage(event) {
+            var input = event.target;
+            var file = input.files[0];
+            var validImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
+
+            if (file && validImageTypes.includes(file.type)) {
+                var reader = new FileReader();
+                reader.onload = function(){
+                    var dataURL = reader.result;
+                    var output = document.getElementById('imagePreview');
+                    output.src = dataURL;
+                    output.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                alert('Por favor selecciona una imagen válida (jpg, png, gif).');
+                input.value = ''; // Limpiar el campo de entrada
+                var output = document.getElementById('imagePreview');
+                output.src = '';
+                output.style.display = 'none';
+            }
+        }
     </script>
 }

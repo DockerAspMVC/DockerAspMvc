@@ -29,4 +29,8 @@
       <PackageReference Include="MimeKit" Version="4.7.1" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Include="wwwroot\css\login.css" />
+    </ItemGroup>
+
 </Project>

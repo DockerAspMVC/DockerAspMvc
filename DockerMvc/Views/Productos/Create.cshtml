@@ -5,7 +5,6 @@
 }
 
 <!DOCTYPE html>
-
 <html>
 <head>
     <title>Crear Producto</title>
@@ -14,7 +13,7 @@
 <body>
     <div class="container">
         <h1>Crear Nuevo Producto</h1>
-        <form asp-action="Create" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+        <form asp-action="Create" method="post" enctype="multipart/form-data" class="needs-validation" novalidate id="createProductForm">
             <div class="form-group">
                 <label for="Nombre">Nombre:</label>
                 <input type="text" class="form-control" id="Nombre" name="Nombre" required>
@@ -27,8 +26,12 @@
             </div>
             <div class="form-group">
                 <label for="Imagen">Imagen:</label>
-                <input type="file" class="form-control-file" id="Imagen" name="Imagen" accept="image/*">
+                <input type="file" class="form-control-file" id="Imagen" name="Imagen" accept="image/*" onchange="validateAndPreviewImage(event)">
                 <small class="form-text text-muted">Selecciona una imagen para el producto.</small>
+                <div class="invalid-feedback">Por favor selecciona una imagen válida (jpg, png, gif).</div>
+            </div>
+            <div class="form-group">
+                <img id="imagePreview" src="" alt="Vista previa de la imagen" style="display:none; width: 100%; max-width: 300px; margin-top: 10px;" />
             </div>
             <div class="form-group">
                 <label for="Precio">Precio:</label>
@@ -45,6 +48,7 @@
     </div>
 
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script> <!-- Asegúrate de incluir el script de Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         // Validación de formulario usando Bootstrap (requiere Bootstrap 4+)
         (function () {
@@ -61,6 +65,51 @@
                     }, false);
                 });
         })();
+
+        function validateAndPreviewImage(event) {
+            var input = event.target;
+            var file = input.files[0];
+            var validImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
+
+            if (file && validImageTypes.includes(file.type)) {
+                var reader = new FileReader();
+                reader.onload = function(){
+                    var dataURL = reader.result;
+                    var output = document.getElementById('imagePreview');
+                    output.src = dataURL;
+                    output.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                alert('Por favor selecciona una imagen válida (jpg, png, gif).');
+                input.value = ''; // Clear the input
+                var output = document.getElementById('imagePreview');
+                output.src = '';
+                output.style.display = 'none';
+            }
+        }
+
+        document.getElementById('createProductForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var form = this;
+
+            // Verifica la validez del formulario antes de mostrar SweetAlert
+            if (form.checkValidity()) {
+                Swal.fire({
+                    title: 'Producto creado',
+                    text: 'El producto ha sido creado exitosamente.',
+                    icon: 'success',
+                    confirmButtonText: 'Ok'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit(); // Envía el formulario después de mostrar el mensaje de éxito
+                    }
+                });
+            } else {
+                event.stopPropagation();
+                form.classList.add('was-validated');
+            }
+        });
     </script>
 </body>
 </html>

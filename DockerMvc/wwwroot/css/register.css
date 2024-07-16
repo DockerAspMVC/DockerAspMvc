@@ -1,0 +1,143 @@
+﻿/* Estilos generales */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #1f1b2c;
+    margin: 0;
+    padding-top: 70px; /* Ajusta el padding para acomodar el header */
+    min-height: 100vh; /* Altura mínima del cuerpo para ocupar toda la ventana visible */
+    position: relative; /* Posición relativa para el cuerpo */
+}
+
+/* Estilos específicos del footer */
+footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+}
+
+/* Estilos para el contenedor de registro */
+.register-container {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 900px;
+    background: #2b2346;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: auto;
+    margin-bottom: 20px; /* Ajusta el margen inferior para separar del footer */
+}
+
+.register-left, .register-right {
+    width: 50%;
+    padding: 40px;
+}
+
+.register-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: #2b2346;
+}
+
+.register-left img {
+    max-width: 100px;
+}
+
+.register-left h1 {
+    color: white;
+    font-size: 2.5em;
+    margin: 20px 0;
+}
+
+.register-left p {
+    color: #bbb;
+    margin-bottom: 20px;
+}
+
+.register-left button {
+    padding: 10px 20px;
+    background-color: #ff6f61;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+.register-right {
+    background: #3e2d7d;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.register-form {
+    max-width: 300px;
+    margin: auto;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.control-label {
+    color: white;
+    margin-bottom: 5px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    margin-bottom: 10px;
+}
+
+.btn {
+    background-color: #ff6f61;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 1em;
+}
+
+.btn:hover {
+    background-color: #ff8a73;
+}
+
+.text-danger {
+    color: #ff6f61;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .register-container {
+        flex-direction: column;
+    }
+
+    .register-left, .register-right {
+        width: 100%;
+        padding: 20px;
+    }
+
+    .register-left img {
+        max-width: 80px;
+    }
+
+    .register-left h1 {
+        font-size: 2em;
+    }
+
+    .btn {
+        font-size: 0.9em;
+    }
+}

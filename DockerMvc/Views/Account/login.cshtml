@@ -1,36 +1,36 @@
 ﻿@model DockerMvc.ModelView.LoginViewModel
-@{
-    ViewData["Title"] = "Login";
-}
 
-<h2>@ViewData["Title"]</h2>
+<link rel="stylesheet" href="~/css/login.css">
 
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Login">
-            <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" type="password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <div class="form-check">
-                    <input asp-for="RememberMe" class="form-check-input" />
-                    <label asp-for="RememberMe" class="form-check-label"></label>
+<div class="login-container">
+    <div class="login-left">
+        <div>
+            <img src="~/images/logos.png" alt="Logo" />
+        </div>
+        <div>
+            <h1>¡Bienvenido!</h1>
+            <p>Bienvenido a nuestra tienda de productos.</p>
+<button onclick="location.href='@Url.Action("Register", "Account")'">Registrarse</button>
+        </div>
+    </div>
+    <div class="login-right">
+        <div class="login-form">
+            <form asp-action="Login">
+                <div class="form-group">
+                    <label asp-for="Email" class="control-label">Correo electronico</label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Login" class="btn btn-primary" />
-            </div>
-            <div class="form-group">
-                <a asp-action="ForgotPassword">Forgot your password?</a>
-            </div>
-        </form>
+                <div class="form-group">
+                    <label asp-for="Password" class="control-label">Contraseña</label>
+                    <input asp-for="Password" type="password" class="form-control" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Iniciar sesion" class="btn btn-primary btn-block" />
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
