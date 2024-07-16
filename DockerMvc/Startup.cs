@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 using DockerMvc.Interface;
 using DockerMvc.Interface.Services;
 using DockerMvc.Models;
-using DockerMvc.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using DbContext = System.Data.Entity.DbContext;
