@@ -12,6 +12,6 @@ namespace DockerMvc.Models
         
         [Display(Name = "Category Description")]
         public string Description { get; set; }
-        
+
     }
 }

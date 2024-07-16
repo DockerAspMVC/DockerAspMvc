@@ -1,47 +1,40 @@
-﻿@model IEnumerable<SubCategoria>
+﻿@model IEnumerable<DockerMvc.Models.SubCategoria>
+
 @{
-    ViewData["Title"] = "Lista de SubCategorías";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "SubCategorías";
 }
 
-<div class="container">
-    <h2>Lista de SubCategorías</h2>
+<h2>SubCategorías</h2>
 
-    <p>
-        <a asp-action="Create" class="btn btn-success">Crear Nueva</a>
-    </p>
+<p>
+    <a asp-action="Create" class="btn btn-primary">Crear Nueva SubCategoría</a>
+</p>
 
-    @if (Model.Count() > 0)
-    {
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Imagen</th>
-                    <th>Producto</th>
-                    <th>Categoría</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td>@item.SubId</td>
-                        <td><img src="@item.Image" class="img-thumbnail" style="width: 100px; height: 100px; object-fit: cover;" /></td>
-                        <td>@item.Productos.Nombre</td>
-                        <td>@item.Categoria.Name</td>
-                        <td>
-                            <a asp-action="Edit" asp-route-id="@item.SubId" class="btn btn-primary">Editar</a>
-                            <a asp-action="Delete" asp-route-id="@item.SubId" class="btn btn-danger">Eliminar</a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    }
-    else
-    {
-        <p>No hay subcategorías registradas.</p>
-    }
-</div>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nombre Categoría</th>
+            <th>Productos Asociados</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Categoria.Name</td>
+                <td>
+                    <ul>
+                        @foreach (var producto in item.SubCategoriaProductos.Select(scp => scp.Productos))
+                        {
+                            <li>@producto.Nombre</li>
+                        }
+                    </ul>
+                </td>
+                <td>
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

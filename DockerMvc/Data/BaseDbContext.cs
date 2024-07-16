@@ -17,5 +17,6 @@ namespace DockerMvc.Data
         public DbSet<Categoria> Categorias { get; set; }
         public DbSet<Productos> Productos { get; set; }
         public DbSet<SubCategoria> SubCategorias { get; set; }
+        public DbSet<SubCategoriaProducto> SubCategoriaProductos { get; set; }
     }
 }
